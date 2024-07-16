@@ -1,9 +1,24 @@
-// build your `/api/resources` router here
-// build your `/api/projects` router here
-const router = require('express').Router()
+const express = require('express')
+const Resources = require('./model')
+const router = express.Router()
 
-router.use('*', (req, res) => {
-    res.json({ api: 'up'})
+router.get('/', async (req, res, next) => {
+    try {
+        const resources = await Resources.getAllResouces()
+        res.json(resources)
+    } catch (err) {
+        next(err)
+    }
+})
+
+router.post('/', async (req, res, next) => { 
+    try {
+        const resource = req.body;
+        const newResource = await Resources.addResource(resource);
+        res.status(201).json(newResource);
+    } catch (err) {
+        next(err);
+    }
 })
 
 router.use((err, req, res, next) => { // eslint-disable-line
