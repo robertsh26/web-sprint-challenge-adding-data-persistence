@@ -1,38 +1,41 @@
-const express = require('express')
-const Projects = require('./model')
-const router = express.Router()
+const express = require('express');
+const Projects = require('./model');
+const router = express.Router();
 
 router.get('/', async (req, res, next) => {
-    try {
-        const projects = await Projects.getAllProjects()
-        res.json(projects)
-    } catch (err) {
-        next(err)
-    }
-})
+  try {
+    const projects = await Projects.getAllProjects();
+    res.json(projects);
+  } catch (err) {
+    next(err);
+  }
+});
 
 router.post('/', async (req, res, next) => {
-    try {
-        const project = req.body
-        if (project.project_completed === undefined) {
-            project.project_completed = false
-        }
-        const newProject = await Projects.addProject({
-            ...project,
-            project_completed: project.project_completed ? 1 : 0
-        })
-        res.status(201).json(newProject)
-    } catch (err) {
-        next (err)
+  try {
+    const { project_name, project_description, project_completed } = req.body;
+
+    if (!project_name) {
+      return res.status(400).json({
+        message: 'project_name is required'
+      });
     }
-})
 
-router.use((err, req, res, next) => { // eslint-disable-line
-    res.status(500).json({
-        customMessage: 'something went wrong inside the projects router',
-        message: err.message,
-        stack:err.stack
-    })
-})
+    const newProject = await Projects.addProject({
+      project_name,
+      project_description,
+      project_completed: project_completed ? 1 : 0
+    });
 
-module.exports = router
+    
+    res.status(201).json({
+      project_name: newProject.project_name,
+      project_description: newProject.project_description,
+      project_completed: !!newProject.project_completed 
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+module.exports = router;

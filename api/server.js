@@ -8,12 +8,8 @@ const server = express()
 
 server.use(express.json())
 
-server.use('/api/project', projectRouter)
-server.use('/api/resource', resourceRouter)
-server.use('/api/task', taskRouter)
-
-server.use('*', (req, res, next) => { // eslint-disable-line
-    res.json({ api: 'up' })
-})
+server.use('/api/projects', projectRouter)
+server.use('/api/resources', resourceRouter)
+server.use('/api/tasks', taskRouter)
 
 module.exports = server
